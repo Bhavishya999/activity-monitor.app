@@ -5,6 +5,9 @@ Read this first. Backend repo: `activity-monitor.api` (REST `/api/v1`, its CLAUD
 ## What we are building
 The dashboard for **Git Activity Monitor**: an internal analytics product showing real GitHub commit activity across many organizations, repositories and developers, **company-wide and per individual**. It must look like a polished commercial SaaS (Linear / Vercel / GitHub Insights), not plain tables. All numbers come from the API; the UI never computes or invents statistics. Sample data is allowed only when the API flags `sample: true`, and then a permanent "SAMPLE DATA" banner shows.
 
+## Access (confirmed)
+Internal tool for one company. Login is via the company Zoho account (OAuth/OIDC) through the backend; the frontend only starts the login redirect and holds an HttpOnly session cookie (no tokens in JS). Roles: DEVELOPER (own + team analytics), ADMIN (employees, GitHub connections, repos, reports), SUPER_ADMIN (all). Only invited/approved employees can sign in; show a clear "ask an admin for access" screen otherwise. Hide admin nav for non-admins, but the API is the authority.
+
 ## Pages (main nav)
 Overview · Developers (+ developer detail) · Repositories (+ detail) · GitHub Accounts · Commit History · Analytics · Reports · Synchronization · Administration · Settings.
 Show: totals, commit trend, hourly activity, repository distribution, contributor leaderboard, activity calendar, recent commits, sync status; per developer: trend, repo breakdown, hourly pattern, calendar, commit history. Leaderboards carry a "commit count ≠ productivity" note.
