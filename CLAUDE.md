@@ -27,6 +27,7 @@ Vite · React 19 · TypeScript (strict) · TanStack Router (file-based) + TanSta
 - Accessibility: WCAG AA, colour-blind-safe chart palette, direct labels, light + dark themes, responsive (tables → cards on mobile).
 - Permissions in the UI are cosmetic; the API is the authority.
 - TypeScript: strict + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes`; no `any`, no `!`, no unnarrowed `as`, no enums, explicit return types on exports, `type` over `interface`. No magic strings in components (constants per domain). Names: components PascalCase, hooks `useX.ts`, services/constants kebab-case, schemas prefixed `v`, handlers `onX`, booleans `isX/hasX/canX`.
+- **Commit identity:** commits are authored only by the user (Bhavishya999). Never add `Co-Authored-By` lines, Claude/session links, or "Generated with" footers to commit messages, PR descriptions or files. Keep messages short and descriptive.
 - `tsc --noEmit`, lint, tests and `npm run build` must pass before every commit. One deployable change per commit. Commit/push only when asked.
 
 ## Status
