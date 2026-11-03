@@ -30,7 +30,7 @@ const DEFAULT_FILTER: FilterValues = {
 };
 
 export function RepositoryDetailPage() {
-  const { id } = useParams({ from: "/repositories/$id" });
+  const { id } = useParams({ from: "/dashboard/repositories/$id" });
   const repoId = parseInt(id, 10);
 
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
@@ -41,7 +41,7 @@ export function RepositoryDetailPage() {
   return (
     <div className="space-y-5 p-6">
       <Link
-        to="/repositories"
+        to="/dashboard/repositories"
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />

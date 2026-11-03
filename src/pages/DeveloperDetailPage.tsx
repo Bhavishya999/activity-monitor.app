@@ -30,7 +30,7 @@ const DEFAULT_FILTER: FilterValues = {
 };
 
 export function DeveloperDetailPage() {
-  const { id } = useParams({ from: "/developers/$id" });
+  const { id } = useParams({ from: "/dashboard/developers/$id" });
   const developerId = parseInt(id, 10);
 
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
@@ -41,7 +41,7 @@ export function DeveloperDetailPage() {
   return (
     <div className="space-y-5 p-6">
       <Link
-        to="/developers"
+        to="/dashboard/developers"
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />

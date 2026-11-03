@@ -36,12 +36,12 @@ function hasRole(userRole: RoleName | undefined, minRole: RoleName): boolean {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Overview", icon: LayoutDashboard, to: "/" },
-  { label: "Developers", icon: Users, to: "/developers" },
-  { label: "Repositories", icon: FolderGit2, to: "/repositories" },
-  { label: "Commits", icon: GitCommitHorizontal, to: "/commits" },
-  { label: "GitHub Accounts", icon: Github, to: "/github-accounts", minRole: "ADMIN" },
-  { label: "Administration", icon: ShieldCheck, to: "/admin", minRole: "ADMIN" },
+  { label: "Overview", icon: LayoutDashboard, to: "/dashboard" },
+  { label: "Developers", icon: Users, to: "/dashboard/developers" },
+  { label: "Repositories", icon: FolderGit2, to: "/dashboard/repositories" },
+  { label: "Commits", icon: GitCommitHorizontal, to: "/dashboard/commits" },
+  { label: "GitHub Accounts", icon: Github, to: "/dashboard/github-accounts", minRole: "ADMIN" },
+  { label: "Administration", icon: ShieldCheck, to: "/dashboard/admin", minRole: "ADMIN" },
 ];
 
 export function DashboardLayout() {

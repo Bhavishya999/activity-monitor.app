@@ -62,10 +62,9 @@ function getRedirectTo(): string {
   try {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("redirectTo");
-    if (!raw) return "/";
-    // Validate it's a relative path (no protocol → no open-redirect)
+    if (!raw) return "/dashboard";
     const decoded = decodeURIComponent(raw);
-    return decoded.startsWith("/") && !decoded.startsWith("//") ? decoded : "/";
+    return decoded.startsWith("/") && !decoded.startsWith("//") ? decoded : "/dashboard";
   } catch {
     return "/";
   }

@@ -113,7 +113,7 @@ export function DevelopersPage() {
                   <TableRow key={dev.id}>
                     <TableCell>
                       <Link
-                        to="/developers/$id"
+                        to="/dashboard/developers/$id"
                         params={{ id: String(dev.id) }}
                         className="flex items-center gap-3 font-medium hover:underline"
                       >

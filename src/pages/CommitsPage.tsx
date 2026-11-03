@@ -64,7 +64,7 @@ const CommitRow = memo(function CommitRow({ commit }: { commit: Commit }) {
       <TableCell>
         {commit.author ? (
           <Link
-            to="/developers/$id"
+            to="/dashboard/developers/$id"
             params={{ id: String(commit.author.id) }}
             className="inline-flex items-center gap-1.5 hover:underline"
           >
@@ -83,7 +83,7 @@ const CommitRow = memo(function CommitRow({ commit }: { commit: Commit }) {
 
       <TableCell>
         <Link
-          to="/repositories/$id"
+          to="/dashboard/repositories/$id"
           params={{ id: String(commit.repository.id) }}
           className="block max-w-[160px] truncate text-xs text-muted-foreground hover:text-foreground hover:underline"
           title={commit.repository.fullName}

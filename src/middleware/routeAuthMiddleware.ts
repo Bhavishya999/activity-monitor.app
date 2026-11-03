@@ -14,23 +14,18 @@ const ROLE_RANK: Record<RoleName, number> = {
 };
 
 type BeforeLoadContext = {
-  location: { pathname: string; search: string };
+  location: { pathname: string; searchStr: string };
 };
 
-/**
- * Redirect unauthenticated users to /login, preserving the intended URL in
- * `?redirectTo=` so the login page can send them back after a successful login.
- * Attaches the resolved user to the router context for downstream beforeLoad hooks.
- */
 export async function requireAuth({ location }: BeforeLoadContext) {
   try {
     const user = await queryClient.fetchQuery(ME_OPTS);
     return { user };
   } catch {
-    const redirectTo = location.pathname + location.search;
+    const redirectTo = location.pathname + location.searchStr;
     throw redirect({
       to: "/login",
-      search: { redirectTo: redirectTo !== "/" ? redirectTo : undefined },
+      search: { redirectTo: redirectTo !== "/login" ? redirectTo : undefined },
     });
   }
 }
@@ -41,10 +36,9 @@ export async function requireAuth({ location }: BeforeLoadContext) {
 export async function requireGuest() {
   try {
     await queryClient.fetchQuery(ME_OPTS);
-    throw redirect({ to: "/" });
+    throw redirect({ to: "/dashboard" });
   } catch (e) {
     if (e instanceof Response || (e as { _isRedirect?: boolean })._isRedirect) throw e;
-    // Fetch failed → not logged in, stay on the page
   }
 }
 
@@ -65,8 +59,7 @@ export function requireRole(minRole: RoleName) {
     const rank = userRole !== undefined ? (ROLE_RANK[userRole] ?? -1) : -1;
 
     if (rank < (ROLE_RANK[minRole] ?? 0)) {
-      // Authenticated but insufficient role → back to overview
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/dashboard" });
     }
   };
 }

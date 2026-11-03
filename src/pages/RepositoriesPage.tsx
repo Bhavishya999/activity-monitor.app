@@ -107,7 +107,7 @@ export function RepositoriesPage() {
                   <TableRow key={repo.id}>
                     <TableCell>
                       <Link
-                        to="/repositories/$id"
+                        to="/dashboard/repositories/$id"
                         params={{ id: String(repo.id) }}
                         className="font-medium hover:underline"
                       >

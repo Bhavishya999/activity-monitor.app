@@ -25,7 +25,8 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     headers["x-csrf-token"] = csrfToken;
   }
 
-  const res = await fetch(`/api/v1${path}`, {
+  const apiBase = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "";
+  const res = await fetch(`${apiBase}/api/v1${path}`, {
     ...init,
     headers,
     credentials: "include",

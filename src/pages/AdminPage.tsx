@@ -35,7 +35,7 @@ function UsersTab() {
   const [search, setSearch] = useState("");
 
   const { data, isLoading, isError, error, refetch } = useAdminUsers({
-    page, pageSize: PAGE_SIZE, search: search || undefined,
+    page, pageSize: PAGE_SIZE, ...(search ? { search } : {}),
   });
   const updateUser = useUpdateUser();
 

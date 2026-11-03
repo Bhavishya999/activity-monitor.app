@@ -14,7 +14,7 @@ import { AdminPage } from "../pages/AdminPage";
 // ── Protected layout — runs requireAuth for every child route ────
 export const dashboardLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: "dashboard",
+  path: "/dashboard",
   beforeLoad: requireAuth,
   component: DashboardLayout,
 });

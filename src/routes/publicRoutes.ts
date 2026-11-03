@@ -1,10 +1,24 @@
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, redirect } from "@tanstack/react-router";
 import { rootRoute } from "./rootRoute";
 import { requireGuest } from "../middleware/routeAuthMiddleware";
 import { LoginPage } from "../pages/LoginPage";
 import { ForgotPasswordPage } from "../pages/ForgotPasswordPage";
 import { VerifyOtpPage } from "../pages/VerifyOtpPage";
 import { ResetPasswordPage } from "../pages/ResetPasswordPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  beforeLoad: () => { throw redirect({ to: "/dashboard" }); },
+  component: () => null,
+});
+
+const notFoundRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "*",
+  component: NotFoundPage,
+});
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -32,6 +46,8 @@ export const resetPasswordRoute = createRoute({
 });
 
 export const publicRoutes = [
+  indexRoute,
+  notFoundRoute,
   loginRoute,
   forgotPasswordRoute,
   verifyOtpRoute,
