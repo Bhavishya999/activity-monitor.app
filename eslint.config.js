@@ -17,5 +17,6 @@ export default tseslint.config(
   },
   // Module augmentation (router registration, Vite env typing) can only be written as `interface` declaration merges.
   { files: ["src/router.tsx", "src/vite-env.d.ts"], rules: { "@typescript-eslint/consistent-type-definitions": "off" } },
-  { files: ["**/*.test.{ts,tsx}"], rules: { "@typescript-eslint/no-non-null-assertion": "off" } },
+  { files: ["server/**/*.mjs"], languageOptions: { globals: { process: "readonly", console: "readonly", fetch: "readonly", URL: "readonly", Headers: "readonly", AbortSignal: "readonly" } } },
+  { files: ["**/*.test.{ts,tsx}", "server/**/*.test.mjs"], rules: { "@typescript-eslint/no-non-null-assertion": "off" } },
 );

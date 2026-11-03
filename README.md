@@ -71,7 +71,7 @@ In development the login page has a development login (the API must run with `DE
 
 | Variable | Purpose |
 |---|---|
-| `VITE_API_URL` | Base URL of the backend API. Leave empty in development |
+| `VITE_API_URL` | Only if the API is on another origin; normally empty (the server proxies `/api`) |
 | `VITE_DEV_API_TARGET` | Dev proxy target, default `http://localhost:3000` |
 
 No secrets belong in this app. In production, serve the app and the API from the same site (for example `app.example.com` and `api.example.com`) so the session cookie is sent.
@@ -90,4 +90,9 @@ Typecheck, lint, tests and build must pass before every commit.
 
 ## Deployment
 
-Static single-page app served on Railway (any static host works). `VITE_API_URL` is needed at build time.
+Railway service using `railway.json`: it builds the app, then `npm start` runs a small Node server (`server/`) that serves the app with security headers (CSP, HSTS) and forwards `/api/*` to the API (`API_ORIGIN`). The browser therefore talks to a single origin and the session cookie works without CORS or a shared domain. Full steps, including the API URL and GitHub webhook, are in the API repo: [docs/DEPLOYMENT.md](https://github.com/Bhavishya999/activity-monitor.api/blob/dev/docs/DEPLOYMENT.md).
+
+| Variable | Purpose |
+|---|---|
+| `API_ORIGIN` | Required in production: the API's address (private Railway address or public URL) |
+| `PORT` | Set by Railway |
