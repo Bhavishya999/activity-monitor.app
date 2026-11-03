@@ -8,13 +8,20 @@ Backend: [`activity-monitor.api`](https://github.com/Bhavishya999/activity-monit
 
 ## Status
 
-Not scaffolded yet. The backend (GitHub ingestion, webhooks, database) is in place; the analytics API comes next, then this app starts with the login screen and the Overview dashboard.
+| Area | State |
+|---|---|
+| App shell, light/dark theme, responsive layout | Done |
+| Overview dashboard (totals, trend, hourly, leaderboard, repositories, calendar, recent commits) | Done |
+| Developers list and per-developer pages | Done |
+| Repositories list and per-repository pages | Done |
+| Commit history search | Done |
+| Teams (admins create teams and choose members) | Done |
+| Analytics (regroup by organization, repository, developer or team) | Done |
+| GitHub Accounts (activity per organization) | Done (connection management comes with admin routes) |
+| Company sign-in (Zoho), invites, Administration | Planned |
+| Reports, Synchronization, Settings pages | Planned (placeholders explain what will live there) |
 
-## Planned pages
-
-Overview · Developers (and detail) · Repositories (and detail) · GitHub Accounts · Commit History · Analytics · Reports · Synchronization · Administration · Settings
-
-Overview and analytics views include commit trends, hourly activity, repository distribution, a contributor leaderboard, an activity calendar, recent commits and sync status. Each developer page has its own trend, repository breakdown, hourly pattern, calendar and commit history.
+Every number comes from the API and refreshes every minute and when you return to the tab. Filters live in the URL.
 
 ## Access
 
@@ -32,34 +39,55 @@ Vite · React 19 · TypeScript (strict) · TanStack Router, Query and Table · T
 - Light and dark themes, responsive layouts, accessible colour-blind-safe charts.
 - Loading, empty and error states on every data view.
 
-## Planned structure
+## Structure
 
 ```
 src/
-  main.tsx, router.tsx
+  main.tsx, router.tsx, routeTree.gen.ts (generated, never edit)
   routes/        file-based routes (no logic, render a page component)
-  components/    <domain>/, core/, ui/
-  features/      isolated feature slices
-  hooks/         data hooks (TanStack Query)
+  components/    overview, developers, repositories, commits, teams, analytics, github, auth,
+                 charts/ (ChartCard, TrendChart, HourlyChart, RankedBars, ActivityCalendar),
+                 core/ (shell, filters, states), ui/ (button, card, select, tooltip, ...)
+  hooks/         TanStack Query hooks and URL filter state
   https/         fetch wrapper and API service functions
-  lib/           query client, auth session, permissions, constants, interfaces
+  lib/           query client, filters, formatting, constants, interfaces
   middleware/    route auth guard
 ```
+
+## Run it locally
+
+Requires Node 22+ and the [`activity-monitor.api`](https://github.com/Bhavishya999/activity-monitor.api) running on port 3000.
+
+```bash
+npm install
+npm run dev          # http://localhost:5173, /api is proxied to the API (no CORS needed)
+```
+
+To see the UI with data before GitHub is connected, run the API against a database named `*sample*` and seed it (see the API README, `npm run seed:sample`). The app then shows a permanent **SAMPLE DATA** banner, and sample data can never be seeded into production.
+
+In development the login page has a development login (the API must run with `DEV_AUTH_ENABLED=true`). It is not available in production builds.
 
 ## Configuration
 
 | Variable | Purpose |
 |---|---|
-| `VITE_API_URL` | Base URL of the backend API |
+| `VITE_API_URL` | Base URL of the backend API. Leave empty in development |
+| `VITE_DEV_API_TARGET` | Dev proxy target, default `http://localhost:3000` |
 
-No secrets belong in this app; everything sensitive lives in the backend.
+No secrets belong in this app. In production, serve the app and the API from the same site (for example `app.example.com` and `api.example.com`) so the session cookie is sent.
 
-## Scripts (once scaffolded)
+## Scripts
 
-`npm run dev` · `npm run build` · `npm run typecheck` · `npm run lint` · `npm test`
+| Command | Description |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run typecheck` | Strict TypeScript |
+| `npm run lint` | ESLint (no `any`, no non-null assertions, hooks rules) |
+| `npm test` | Vitest and Testing Library |
+| `npm run build` | Type check and production build |
 
 Typecheck, lint, tests and build must pass before every commit.
 
 ## Deployment
 
-Static single-page app served on Railway.
+Static single-page app served on Railway (any static host works). `VITE_API_URL` is needed at build time.

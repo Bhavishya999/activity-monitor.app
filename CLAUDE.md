@@ -31,5 +31,7 @@ Vite · React 19 · TypeScript (strict) · TanStack Router (file-based) + TanSta
 - `tsc --noEmit`, lint, tests and `npm run build` must pass before every commit. One deployable change per commit. Commit/push only when asked.
 
 ## Status
-Not started yet (repo is empty). First: scaffold Vite + router + shared UI kit + theme, then the Overview dashboard against the analytics API once it exists.
-Waiting on user: create private GitHub repos and connect them.
+Done: Vite + React 19 + TanStack Router/Query + Tailwind 4 setup, design tokens (light/dark, validated chart palette), app shell, Overview, Developers (+detail), Repositories (+detail), Commit history, Teams (admin create + members), Analytics (group by organization/repository/developer/team), GitHub Accounts (activity view), URL-based filters, chart table views, 37 unit/component tests, browser-verified flows.
+Next: Zoho login + invites + Administration (needs backend), Reports, Synchronization, Settings, TanStack Table for large tables, richer GitHub Accounts management.
+Notes: dev server proxies /api to the backend; the sample banner appears when the API reports `sample: true`.
+Waiting on user: Zoho API Console client + data center; GitHub App credentials (to show real data).
