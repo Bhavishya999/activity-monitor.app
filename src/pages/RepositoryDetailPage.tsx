@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useParams, Link } from "@tanstack/react-router";
-import { ArrowLeft, GitCommitHorizontal, ExternalLink } from "lucide-react";
+import { ArrowLeft, GitCommitHorizontal, ExternalLink, RefreshCw } from "lucide-react";
 import { useRepositoryDetail } from "../hooks/useAnalytics";
 import { FilterBar, type FilterValues } from "../components/core/FilterBar";
 import { PageHeader } from "../components/core/PageHeader";
 import { StatCard } from "../components/core/StatCard";
 import { ErrorState } from "../components/core/ErrorState";
+import { ProfileHeaderSkeleton, ChartSkeleton } from "../components/core/Skeletons";
 import { CommitTrendChart } from "../components/charts/CommitTrendChart";
 import { HourlyActivityChart } from "../components/charts/HourlyActivityChart";
 import { TopListChart } from "../components/charts/TopListChart";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Skeleton } from "../components/ui/skeleton";
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -34,9 +34,10 @@ export function RepositoryDetailPage() {
   const repoId = parseInt(id, 10);
 
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
-  const { data, isLoading, isError, error, refetch } = useRepositoryDetail(repoId, filter);
+  const { data, isLoading, isFetching, isError, error, refetch } = useRepositoryDetail(repoId, filter);
 
   const repo = data?.repository;
+  const isBackgroundFetching = isFetching && !isLoading;
 
   return (
     <div className="space-y-5 p-6">
@@ -50,17 +51,19 @@ export function RepositoryDetailPage() {
 
       {/* Header */}
       {isLoading ? (
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-64" />
-          <Skeleton className="h-4 w-40" />
-        </div>
+        <ProfileHeaderSkeleton />
       ) : repo ? (
         <div>
           <PageHeader
             title={repo.name}
             subtitle={repo.fullName}
             actions={
-              repo.htmlUrl ? (
+              isBackgroundFetching ? (
+                <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground" aria-live="polite">
+                  <RefreshCw className="h-3 w-3 animate-spin" aria-hidden />
+                  Refreshing…
+                </span>
+              ) : repo.htmlUrl ? (
                 <a
                   href={repo.htmlUrl}
                   target="_blank"
@@ -99,7 +102,7 @@ export function RepositoryDetailPage() {
       <Card>
         <CardHeader><CardTitle>Commit Trend</CardTitle></CardHeader>
         <CardContent>
-          {isLoading ? <Skeleton className="h-52 w-full" /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
+          {isLoading ? <ChartSkeleton height={208} /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
         </CardContent>
       </Card>
 
@@ -114,7 +117,7 @@ export function RepositoryDetailPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-44 w-full" />
+              <ChartSkeleton height={176} />
             ) : (
               <TopListChart
                 data={(data?.topContributors ?? []).map((c) => ({ label: c.login, count: c.count }))}
@@ -126,7 +129,7 @@ export function RepositoryDetailPage() {
         <Card>
           <CardHeader><CardTitle>Hourly Activity</CardTitle></CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-44 w-full" /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
+            {isLoading ? <ChartSkeleton height={176} /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
           </CardContent>
         </Card>
       </div>

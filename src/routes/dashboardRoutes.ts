@@ -2,6 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "./rootRoute";
 import { requireAuth, requireRole } from "../middleware/routeAuthMiddleware";
 import { DashboardLayout } from "../components/core/DashboardLayout";
+import { AppLoadingScreen } from "../components/core/AppLoadingScreen";
 import { OverviewPage } from "../pages/OverviewPage";
 import { DevelopersPage } from "../pages/DevelopersPage";
 import { DeveloperDetailPage } from "../pages/DeveloperDetailPage";
@@ -17,6 +18,9 @@ export const dashboardLayoutRoute = createRoute({
   path: "/dashboard",
   beforeLoad: requireAuth,
   component: DashboardLayout,
+  pendingComponent: AppLoadingScreen,
+  pendingMs: 200,
+  pendingMinMs: 300,
 });
 
 // ── Child routes — each states only its own path and component ───

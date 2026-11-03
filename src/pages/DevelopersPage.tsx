@@ -7,6 +7,7 @@ import { PageHeader } from "../components/core/PageHeader";
 import { Pagination } from "../components/core/Pagination";
 import { ErrorState } from "../components/core/ErrorState";
 import { EmptyState } from "../components/core/EmptyState";
+import { TableFetchingOverlay } from "../components/core/TableFetchingOverlay";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { Card } from "../components/ui/card";
@@ -39,7 +40,7 @@ export function DevelopersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data, isLoading, isError, error, refetch } = useDevelopers({ ...filter, page, pageSize: PAGE_SIZE });
+  const { data, isLoading, isFetching, isPlaceholderData, isError, error, refetch } = useDevelopers({ ...filter, page, pageSize: PAGE_SIZE });
 
   const handleFilterChange = useCallback((next: FilterValues) => {
     setFilter(next);
@@ -58,6 +59,7 @@ export function DevelopersPage() {
 
       {isError && <ErrorState error={error} onRetry={() => void refetch()} />}
 
+      <TableFetchingOverlay isFetching={isFetching} isPlaceholderData={isPlaceholderData}>
       <Card>
         {/* Toolbar */}
         <div className="flex items-center gap-3 border-b border-border px-4 py-3">
@@ -148,6 +150,7 @@ export function DevelopersPage() {
           </div>
         )}
       </Card>
+      </TableFetchingOverlay>
     </div>
   );
 }

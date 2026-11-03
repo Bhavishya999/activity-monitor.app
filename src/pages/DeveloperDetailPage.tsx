@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useParams, Link } from "@tanstack/react-router";
-import { ArrowLeft, GitCommitHorizontal, Calendar } from "lucide-react";
+import { ArrowLeft, GitCommitHorizontal, Calendar, RefreshCw } from "lucide-react";
 import { useDeveloperDetail } from "../hooks/useAnalytics";
 import { FilterBar, type FilterValues } from "../components/core/FilterBar";
 import { PageHeader } from "../components/core/PageHeader";
 import { StatCard } from "../components/core/StatCard";
 import { ErrorState } from "../components/core/ErrorState";
+import { ProfileHeaderSkeleton, ChartSkeleton } from "../components/core/Skeletons";
 import { CommitTrendChart } from "../components/charts/CommitTrendChart";
 import { HourlyActivityChart } from "../components/charts/HourlyActivityChart";
 import { TopListChart } from "../components/charts/TopListChart";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Skeleton } from "../components/ui/skeleton";
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -34,9 +34,10 @@ export function DeveloperDetailPage() {
   const developerId = parseInt(id, 10);
 
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
-  const { data, isLoading, isError, error, refetch } = useDeveloperDetail(developerId, filter);
+  const { data, isLoading, isFetching, isError, error, refetch } = useDeveloperDetail(developerId, filter);
 
   const dev = data?.developer;
+  const isBackgroundFetching = isFetching && !isLoading;
 
   return (
     <div className="space-y-5 p-6">
@@ -49,25 +50,28 @@ export function DeveloperDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-center gap-4">
-        {isLoading ? (
-          <>
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-1.5">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-3.5 w-24" />
-            </div>
-          </>
-        ) : dev ? (
-          <>
-            <Avatar className="h-12 w-12 ring-2 ring-border">
-              {dev.avatarUrl && <AvatarImage src={dev.avatarUrl} alt={dev.login} />}
-              <AvatarFallback>{dev.login.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <PageHeader title={dev.login} subtitle={`Account type: ${dev.type}`} />
-          </>
-        ) : null}
-      </div>
+      {isLoading ? (
+        <ProfileHeaderSkeleton />
+      ) : dev ? (
+        <div className="flex items-center gap-4">
+          <Avatar className="h-12 w-12 ring-2 ring-border">
+            {dev.avatarUrl && <AvatarImage src={dev.avatarUrl} alt={dev.login} />}
+            <AvatarFallback>{dev.login.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <PageHeader
+            title={dev.login}
+            subtitle={`Account type: ${dev.type}`}
+            actions={
+              isBackgroundFetching ? (
+                <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground" aria-live="polite">
+                  <RefreshCw className="h-3 w-3 animate-spin" aria-hidden />
+                  Refreshing…
+                </span>
+              ) : undefined
+            }
+          />
+        </div>
+      ) : null}
 
       {isError && <ErrorState error={error} onRetry={() => void refetch()} />}
 
@@ -106,7 +110,7 @@ export function DeveloperDetailPage() {
           )}
         </CardHeader>
         <CardContent>
-          {isLoading ? <Skeleton className="h-52 w-full" /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
+          {isLoading ? <ChartSkeleton height={208} /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
         </CardContent>
       </Card>
 
@@ -116,7 +120,7 @@ export function DeveloperDetailPage() {
           <CardHeader><CardTitle>Repository Breakdown</CardTitle></CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-44 w-full" />
+              <ChartSkeleton height={176} />
             ) : (
               <TopListChart
                 data={(data?.repoBreakdown ?? []).map((r) => ({ label: r.fullName, count: r.count }))}
@@ -128,7 +132,7 @@ export function DeveloperDetailPage() {
         <Card>
           <CardHeader><CardTitle>Hourly Activity</CardTitle></CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-44 w-full" /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
+            {isLoading ? <ChartSkeleton height={176} /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
           </CardContent>
         </Card>
       </div>

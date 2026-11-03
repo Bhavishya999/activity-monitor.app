@@ -13,6 +13,7 @@ export const queryClient = new QueryClient({
         return failureCount < 1;
       },
       staleTime: 30_000,
+      gcTime: 5 * 60_000,
       refetchOnWindowFocus: false,
     },
   },

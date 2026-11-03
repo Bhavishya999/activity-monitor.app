@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Outlet, Link, useRouter } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useIsFetching } from "@tanstack/react-query";
 import {
   GitCommitHorizontal,
   LayoutDashboard,
@@ -48,6 +48,7 @@ export function DashboardLayout() {
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: getMeApi });
   const qc = useQueryClient();
   const router = useRouter();
+  const isFetchingAny = useIsFetching() > 0;
 
   const logout = useMutation({
     mutationFn: logoutApi,
@@ -85,6 +86,14 @@ export function DashboardLayout() {
           <span className="truncate text-[13px] font-semibold tracking-tight">
             Git Activity Monitor
           </span>
+          {isFetchingAny && (
+            <span
+              className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{ background: "oklch(0.560 0.230 265)", animation: "pulse 1.5s ease-in-out infinite" }}
+              aria-label="Loading data"
+              role="status"
+            />
+          )}
         </div>
 
         {/* Nav */}

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { GitCommitHorizontal, Users, FolderGit2, GitBranch } from "lucide-react";
+import { GitCommitHorizontal, Users, FolderGit2, GitBranch, RefreshCw } from "lucide-react";
 import { useOverview } from "../hooks/useAnalytics";
 import { useGitHubAccounts } from "../hooks/useAdmin";
 import { FilterBar, type FilterValues } from "../components/core/FilterBar";
@@ -7,12 +7,12 @@ import { PageHeader } from "../components/core/PageHeader";
 import { StatCard } from "../components/core/StatCard";
 import { ErrorState } from "../components/core/ErrorState";
 import { EmptyState } from "../components/core/EmptyState";
+import { StatsSkeleton, ChartSkeleton, ContributorListSkeleton } from "../components/core/Skeletons";
 import { CommitTrendChart } from "../components/charts/CommitTrendChart";
 import { HourlyActivityChart } from "../components/charts/HourlyActivityChart";
 import { TopListChart } from "../components/charts/TopListChart";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Skeleton } from "../components/ui/skeleton";
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -32,16 +32,28 @@ const DEFAULT_FILTER: FilterValues = {
 
 export function OverviewPage() {
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
-  const { data, isLoading, isError, error, refetch } = useOverview(filter);
+  const { data, isLoading, isFetching, isError, error, refetch } = useOverview(filter);
   const { data: accounts } = useGitHubAccounts();
 
   const handleFilterChange = useCallback((next: FilterValues) => setFilter(next), []);
 
   const ghCount = accounts?.accounts.length ?? null;
+  const isBackgroundFetching = isFetching && !isLoading;
 
   return (
     <div className="space-y-5 p-6">
-      <PageHeader title="Overview" subtitle="Company-wide commit activity" />
+      <PageHeader
+        title="Overview"
+        subtitle="Company-wide commit activity"
+        actions={
+          isBackgroundFetching ? (
+            <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground" aria-live="polite">
+              <RefreshCw className="h-3 w-3 animate-spin" aria-hidden />
+              Refreshing…
+            </span>
+          ) : undefined
+        }
+      />
 
       {data?.sample && (
         <div className="rounded-lg border border-amber-400/30 bg-amber-400/8 px-4 py-2.5 text-[13px] font-medium text-amber-600 dark:text-amber-400">
@@ -53,13 +65,17 @@ export function OverviewPage() {
 
       {isError && <ErrorState error={error} onRetry={() => void refetch()} />}
 
-      {/* Stat cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Commits" value={data?.totalCommits} icon={GitCommitHorizontal} loading={isLoading} />
-        <StatCard label="Active Developers" value={data?.totalDevelopers} icon={Users} loading={isLoading} />
-        <StatCard label="Repositories" value={data?.totalRepos} icon={FolderGit2} loading={isLoading} />
-        <StatCard label="GitHub Accounts" value={ghCount} icon={GitBranch} loading={ghCount === null && isLoading} />
-      </div>
+      {/* Stat cards — skeleton on initial load only */}
+      {isLoading ? (
+        <StatsSkeleton />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="Total Commits" value={data?.totalCommits} icon={GitCommitHorizontal} />
+          <StatCard label="Active Developers" value={data?.totalDevelopers} icon={Users} />
+          <StatCard label="Repositories" value={data?.totalRepos} icon={FolderGit2} />
+          <StatCard label="GitHub Accounts" value={ghCount} icon={GitBranch} />
+        </div>
+      )}
 
       {/* Commit trend */}
       <Card>
@@ -72,7 +88,7 @@ export function OverviewPage() {
           )}
         </CardHeader>
         <CardContent>
-          {isLoading ? <Skeleton className="h-52 w-full" /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
+          {isLoading ? <ChartSkeleton height={208} /> : <CommitTrendChart data={data?.commitTrend ?? []} />}
         </CardContent>
       </Card>
 
@@ -81,7 +97,7 @@ export function OverviewPage() {
         <Card>
           <CardHeader><CardTitle>Hourly Activity</CardTitle></CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-44 w-full" /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
+            {isLoading ? <ChartSkeleton height={176} /> : <HourlyActivityChart data={data?.hourlyActivity ?? []} />}
           </CardContent>
         </Card>
 
@@ -89,8 +105,8 @@ export function OverviewPage() {
           <CardHeader><CardTitle>Top Repositories</CardTitle></CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-44 w-full" />
-            ) : data?.topRepos.length === 0 ? (
+              <ChartSkeleton height={176} />
+            ) : (data?.topRepos.length ?? 0) === 0 ? (
               <EmptyState title="No repos with commits" />
             ) : (
               <TopListChart
@@ -111,11 +127,7 @@ export function OverviewPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-9 w-full" />
-              ))}
-            </div>
+            <ContributorListSkeleton rows={5} />
           ) : (data?.topContributors.length ?? 0) === 0 ? (
             <EmptyState title="No contributors in this period" />
           ) : (

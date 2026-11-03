@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Search } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useRepositories } from "../hooks/useAnalytics";
+import { TableFetchingOverlay } from "../components/core/TableFetchingOverlay";
 import { FilterBar, type FilterValues } from "../components/core/FilterBar";
 import { PageHeader } from "../components/core/PageHeader";
 import { Pagination } from "../components/core/Pagination";
@@ -38,7 +39,7 @@ export function RepositoriesPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data, isLoading, isError, error, refetch } = useRepositories({ ...filter, page, pageSize: PAGE_SIZE });
+  const { data, isLoading, isFetching, isPlaceholderData, isError, error, refetch } = useRepositories({ ...filter, page, pageSize: PAGE_SIZE });
 
   const handleFilterChange = useCallback((next: FilterValues) => {
     setFilter(next);
@@ -57,6 +58,7 @@ export function RepositoriesPage() {
 
       {isError && <ErrorState error={error} onRetry={() => void refetch()} />}
 
+      <TableFetchingOverlay isFetching={isFetching} isPlaceholderData={isPlaceholderData}>
       <Card>
         {/* Toolbar */}
         <div className="flex items-center gap-3 border-b border-border px-4 py-3">
@@ -143,6 +145,7 @@ export function RepositoriesPage() {
           </div>
         )}
       </Card>
+      </TableFetchingOverlay>
     </div>
   );
 }

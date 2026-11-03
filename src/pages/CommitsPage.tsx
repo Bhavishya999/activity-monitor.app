@@ -1,5 +1,6 @@
 import { useState, useCallback, memo } from "react";
 import { Link } from "@tanstack/react-router";
+import { TableFetchingOverlay } from "../components/core/TableFetchingOverlay";
 import { ExternalLink } from "lucide-react";
 import { useCommits } from "../hooks/useAnalytics";
 import { FilterBar, type FilterValues } from "../components/core/FilterBar";
@@ -123,7 +124,7 @@ export function CommitsPage() {
   const [filter, setFilter] = useState<FilterValues>(DEFAULT_FILTER);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError, error, refetch } = useCommits({ ...filter, page, pageSize: PAGE_SIZE });
+  const { data, isLoading, isFetching, isPlaceholderData, isError, error, refetch } = useCommits({ ...filter, page, pageSize: PAGE_SIZE });
 
   const handleFilterChange = useCallback((next: FilterValues) => {
     setFilter(next);
@@ -137,6 +138,7 @@ export function CommitsPage() {
 
       {isError && <ErrorState error={error} onRetry={() => void refetch()} />}
 
+      <TableFetchingOverlay isFetching={isFetching} isPlaceholderData={isPlaceholderData}>
       <Card>
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <p className="text-xs text-muted-foreground">
@@ -187,6 +189,7 @@ export function CommitsPage() {
           </div>
         )}
       </Card>
+      </TableFetchingOverlay>
     </div>
   );
 }
